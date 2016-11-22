@@ -73,6 +73,7 @@ export function optionAtIndex(originalCollection, index) {
 
 export function filterOptions(options, text, matcher, skipDisabled = false) {
   let opts = A();
+  let opts3D = A();
   let length = get(options, 'length');
   for (let i = 0; i < length; i++) {
     let entry = options.objectAt ? options.objectAt(i) : options[i];
@@ -87,7 +88,18 @@ export function filterOptions(options, text, matcher, skipDisabled = false) {
           opts.push(groupCopy);
         }
       } else if (matcher(entry, text) >= 0) {
-        opts.push(entry);
+        let n = matcher(entry, text);
+
+        if (opts3D[n]) {
+          opts3D[n].push(entry);
+        } else {
+          opts3D.splice(n, 0, [entry]);
+        }
+      }
+    }
+    if (i === length - 1) {
+      for (let j = opts3D.length; j > 0; j--) {
+        Array.prototype.push.apply(opts, opts3D[j - 1]);
       }
     }
   }
